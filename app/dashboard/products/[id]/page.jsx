@@ -1,34 +1,39 @@
+import { updateProduct } from '@/app/lib/actions'
+import { fetchProduct } from '@/app/lib/data'
 import styles from '@/app/ui/dashboard/products/singleProduct/singleProduct.module.css'
 import Image from 'next/image'
 
-const SingleProductPage = () => {
+const SingleProductPage = async ({ params }) => {
+    const { id } = params
+    const product = await fetchProduct(id)
+
     return (
         <div className={styles.container}>
             <div className={styles.infoContainer}>
                 <div className={styles.imgContainer}>
                     <Image src='/astronaut.png' alt='' fill />
                 </div>
-                iPhone
+                {product.title}
             </div>
             <div className={styles.formContainer}>
-                <form action="" className={styles.form}>
+                <form action={updateProduct} className={styles.form}>
                     <label>Title</label>
-                    <input type="text" name='title' placeholder='iPhone' />
+                    <input type="text" name='title' placeholder={product.title} />
                     <label>Price</label>
-                    <input type="number" name='price' placeholder='$419' />
+                    <input type="number" name='price' placeholder={product.price} />
                     <label>Stock</label>
-                    <input type="number" name='stock' placeholder='32' />
+                    <input type="number" name='stock' placeholder={product.stock} />
                     <label>Color</label>
-                    <input type="text" name='color' placeholder='Dark Grey' />
+                    <input type="text" name='color' placeholder={product.color || 'color'} />
                     <label>Size</label>
-                    <textarea type="text" name='size' placeholder='256Gb' />
+                    <textarea type="text" name='size' placeholder={product.size || 'size'} />
                     <label>Category</label>
                     <select name="category" id="category">
                         <option value='kitchen'>Kitchen</option>
                         <option value='gadget'>Gadget</option>
                     </select>
                     <label>Description</label>
-                    <textarea name="description" id="description" cols="30" rows="10" placeholder='term lips declared agree mass birds bill seen tie him round shinning zero movement there pride stiff coat automobile other surface magic office captured'></textarea>
+                    <textarea name="description" id="description" cols="30" rows="10" placeholder={product.description}></textarea>
                     <button>Update</button>
                 </form>
             </div>

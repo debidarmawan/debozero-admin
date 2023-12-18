@@ -3,15 +3,16 @@ import Chart from '../ui/dashboard/chart/chart'
 import Rightbar from '../ui/dashboard/rightbar/rightbar'
 import Transaction from '../ui/dashboard/transaction/transaction'
 import styles from '../ui/dashboard/dashboard.module.css'
+import { cards } from '../lib/data'
 
 const Dashboard = () => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.main}>
                 <div className={styles.cards}>
-                    <Card />
-                    <Card />
-                    <Card />
+                    {cards.map((card) => (
+                        <Card item={card} key={card.id} />
+                    ))}
                 </div>
                 <Transaction />
                 <Chart />
