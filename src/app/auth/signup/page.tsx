@@ -1,14 +1,25 @@
-import React from "react";
+'use client'
+
+import React, { useActionState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "DeboZero Admin SignUp",
-    description: "This is DeboZero Admin SignUp Page",
-};
+import { useFormStatus } from "react-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import { signUp } from "@/app/actions/auth";
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const SignUp: React.FC = () => {
+
+    const [state, action] = useActionState(signUp, undefined);
+
+    useEffect(() => {
+        if (state?.message != null && state?.message != "") {
+            if (state.type == 'error') {
+                toast.error(state.message, { position: "top-center" });
+            }
+        }
+    }, [state]);
+
     return (
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="mt-10 mb-10 flex flex-wrap items-center">
@@ -165,13 +176,14 @@ const SignUp: React.FC = () => {
                             Sign Up to DeboZero Admin
                         </h2>
 
-                        <form>
+                        <form action={action}>
                             <div className="mb-4">
                                 <label className="mb-2.5 block font-medium text-black dark:text-white">
                                     Full Name
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="fullname"
                                         type="text"
                                         placeholder="Enter your full name"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primaryfocus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -198,6 +210,7 @@ const SignUp: React.FC = () => {
                                         </svg>
                                     </span>
                                 </div>
+                                {state?.errors?.fullname && <p>{state.errors.fullname}</p>}
                             </div>
 
                             <div className="mb-4">
@@ -206,6 +219,7 @@ const SignUp: React.FC = () => {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="username"
                                         type="text"
                                         placeholder="Enter your username"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primaryfocus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -240,6 +254,7 @@ const SignUp: React.FC = () => {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="email"
                                         type="email"
                                         placeholder="Enter your email"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -263,6 +278,7 @@ const SignUp: React.FC = () => {
                                         </svg>
                                     </span>
                                 </div>
+                                {state?.errors?.email && <p>{state.errors.email}</p>}
                             </div>
 
                             <div className="mb-4">
@@ -271,6 +287,7 @@ const SignUp: React.FC = () => {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="password"
                                         type="password"
                                         placeholder="Enter your password"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -298,6 +315,16 @@ const SignUp: React.FC = () => {
                                         </svg>
                                     </span>
                                 </div>
+                                {state?.errors?.password && (
+                                    <div>
+                                        <p>Password must:</p>
+                                        <ul>
+                                            {state.errors.password.map((error) => (
+                                                <li key={error}>- {error}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mb-6">
@@ -306,6 +333,7 @@ const SignUp: React.FC = () => {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="confirm_password"
                                         type="password"
                                         placeholder="Re-enter your password"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -335,13 +363,7 @@ const SignUp: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="mb-5">
-                                <input
-                                    type="submit"
-                                    value="Create account"
-                                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
-                                />
-                            </div>
+                            <SubmitButton />
 
                             <div className="mt-6 text-center">
                                 <p>
@@ -355,8 +377,24 @@ const SignUp: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };
+
+function SubmitButton() {
+    const { pending } = useFormStatus()
+
+    return (
+        <div className="mb-5">
+            <input
+                disabled={pending}
+                type="submit"
+                value="Create account"
+                className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+            />
+        </div>
+    )
+}
 
 export default SignUp;

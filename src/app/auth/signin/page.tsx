@@ -1,14 +1,38 @@
-import React from "react";
+'use client'
+import React, { FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "DeboZero Admin SignUp",
-    description: "This is DeboZero Admin SignUp Page",
-};
+import { useRouter } from "next/navigation";
+import { getDebozeroCoreApiURL } from "@/app/lib/utlis";
 
 const SignIn: React.FC = () => {
+    const router = useRouter()
+
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+        const coreApiHost = getDebozeroCoreApiURL()
+        const url = coreApiHost + '/api/v1/auth/login'
+        
+        const body = {
+            email : formData.get('email'),
+            password : formData.get('password')
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        })
+
+        if (response.ok) {
+            router.push('/')
+        } else {
+            router.refresh()
+        }
+    }
+
     return (
         <div className="max-auto max-w-screen border border-stroke rounded-sm bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="mt-35 mb-39 flex flex-wrap items-center">
@@ -168,13 +192,14 @@ const SignIn: React.FC = () => {
                             Sign In to TailAdmin
                         </h2>
 
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label className="mb-2.5 block font-medium text-black dark:text-white">
                                     Email
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="email"
                                         type="email"
                                         placeholder="Enter your email"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -206,6 +231,7 @@ const SignIn: React.FC = () => {
                                 </label>
                                 <div className="relative">
                                     <input
+                                        name="password"
                                         type="password"
                                         placeholder="6+ Characters, 1 Capital letter"
                                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
